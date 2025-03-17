@@ -1,0 +1,20 @@
+{
+  "include": ["src"],
+  "exclude": ["node_modules"],
+  "compilerOptions": {
+    "target": "es2022",
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "baseUrl": "./src",
+    "allowSyntheticDefaultImports": true,
+    "outDir": "./dist" /* Specify an output folder for all emitted files. */
+  }
+}
