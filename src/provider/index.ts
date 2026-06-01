@@ -8,7 +8,8 @@ import type {
   RedirectFn,
 } from "type";
 
-import { test_getUserInfo, test_redirectFn } from "./test";
+import { test_getUserInfo, test_redirectFn } from "./example";
+import { oauth2_getUserInfo, oauth2_redirectFn } from "./oauth2.example";
 // TODO: other providers
 
 const providerMap: {
@@ -25,6 +26,10 @@ const providerMap: {
   test: {
     redirectFn: test_redirectFn,
     getUserInfo: test_getUserInfo,
+  },
+  oauth2: {
+    redirectFn: oauth2_redirectFn,
+    getUserInfo: oauth2_getUserInfo,
   },
   // TODO: other providers
 };

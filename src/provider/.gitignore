@@ -1,3 +1,5 @@
 *.ts
+!*.example.ts
+!example.ts
 !test.ts
 !index.ts
