@@ -1,4 +1,4 @@
-import { Request } from 'express';
+import type { Request } from 'express';
 export type RedirectFn = (data: {
   req: Request;
   redirect_uri: string;
@@ -25,7 +25,7 @@ export type UserListType = {
   memberName: string;
   avatar?: string;
   contact?: string;
-  org?: string[];
+  orgs?: string[];
 }[];
 
 export type GetUserListFn = () => Promise<UserListType>;

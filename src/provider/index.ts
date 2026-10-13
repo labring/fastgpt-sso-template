@@ -5,17 +5,16 @@ import type {
   GetOrgListFn,
   GetUserInfoFn,
   GetUserListFn,
-  RedirectFn,
-} from "type";
+  RedirectFn
+} from 'type';
 
-import { test_getUserInfo, test_redirectFn } from "./example";
-import { oauth2_getUserInfo, oauth2_redirectFn } from "./oauth2.example";
-// TODO: other providers
+import { test_getOrgList, test_GetUserList, test_getUserInfo, test_redirectFn } from './example';
+import { oauth2_getUserInfo, oauth2_redirectFn } from './oauth2.example';
 
 const providerMap: {
   [key: string]: {
-    getUserInfo: GetUserInfoFn;
-    redirectFn: RedirectFn;
+    getUserInfo?: GetUserInfoFn;
+    redirectFn?: RedirectFn;
     callbackFn?: CallbackFn;
     getMetaData?: GetMetaDataFn;
     assertFn?: AssertFn;
@@ -26,18 +25,21 @@ const providerMap: {
   test: {
     redirectFn: test_redirectFn,
     getUserInfo: test_getUserInfo,
+    getUserList: test_GetUserList,
+    getOrgList: test_getOrgList
   },
   oauth2: {
     redirectFn: oauth2_redirectFn,
-    getUserInfo: oauth2_getUserInfo,
-  },
-  // TODO: other providers
+    getUserInfo: oauth2_getUserInfo
+  }
 };
 
 export function getProvider() {
-  const provider = process.env.SSO_PROVIDER as keyof typeof providerMap;
-  if (!providerMap[provider]) {
-    return false;
-  }
-  return providerMap[provider];
+  const provider = process.env.SSO_PROVIDER;
+  return (provider ? providerMap[provider] : undefined) || false;
+}
+
+export function getSyncProvider() {
+  const provider = process.env.SSO_SYNC_PROVIDER;
+  return provider ? providerMap[provider] || false : getProvider();
 }
