@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { getProvider } from 'provider';
+import { getProvider, getSyncProvider } from 'provider';
 import { getErrText } from 'utils';
 
 export const handleGetAuthUrl = async (req: Request, res: Response) => {
@@ -8,6 +8,9 @@ export const handleGetAuthUrl = async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'provider is required' });
   }
   const { redirectFn } = provider;
+  if (!redirectFn) {
+    return res.status(400).json({ error: 'current provider does not support login' });
+  }
 
   if (process.env.REDIRECT) {
     // if current hostname is not equal to HOSTNAME, redirect to HOSTNAME with the same path
@@ -124,6 +127,9 @@ export const handleGetUserInfo = async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'provider is required' });
   }
   const { getUserInfo } = provider;
+  if (!getUserInfo) {
+    return res.status(400).json({ error: 'current provider does not support login' });
+  }
 
   try {
     const { code } = req.query as { code: string };
@@ -149,7 +155,7 @@ export const handleGetUserInfo = async (req: Request, res: Response) => {
 };
 
 export const handleGetUserList = async (req: Request, res: Response) => {
-  const provider = getProvider();
+  const provider = getSyncProvider();
   if (!provider) {
     return res.status(400).json({ error: 'provider is required' });
   }
@@ -174,7 +180,7 @@ export const handleGetUserList = async (req: Request, res: Response) => {
 };
 
 export const handleGetOrgList = async (req: Request, res: Response) => {
-  const provider = getProvider();
+  const provider = getSyncProvider();
   if (!provider) {
     return res.status(400).json({ error: 'provider is required' });
   }
