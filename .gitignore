@@ -6,3 +6,8 @@ node_modules
 
 # private images
 docker
+
+.env
+.env.*
+!.env.template
+*.tsbuildinfo

@@ -1,4 +1,4 @@
-import type { Request } from 'express';
+import type { Request } from "express";
 export type RedirectFn = (data: {
   req: Request;
   redirect_uri: string;
@@ -12,13 +12,9 @@ export type GetUserInfoFn = (code: string) => Promise<{
   memberName?: string;
 }>;
 
-export type CallbackFn = (data: { req: Request }) => Promise<{ redirectUrl: string }>;
-
-export type AssertFn = (data: {
-  SAMLResponse: string;
-  RelayState: string;
+export type CallbackFn = (data: {
+  req: Request;
 }) => Promise<{ redirectUrl: string }>;
-export type GetMetaDataFn = () => Promise<string>;
 
 export type UserListType = {
   username: string;

@@ -1,16 +1,16 @@
-import { Request, Response } from 'express';
-
-export function auth(req: Request, res: Response, next: Function) {
-  const auth = req.headers.authorization;
-  if (!auth) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-  const [type, token] = auth.split(' ');
-  if (type !== 'Bearer' || !token) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-  if (token !== process.env.AUTH_TOKEN) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-  next();
+import { timingSafeEqual } from "node:crypto";
+import type { RequestHandler } from "express";
+export function auth(token: string): RequestHandler {
+  return (req, res, next) => {
+    const actual = Buffer.from(req.headers.authorization || "");
+    const expected = Buffer.from(`Bearer ${token}`);
+    if (
+      actual.length !== expected.length ||
+      !timingSafeEqual(actual, expected)
+    ) {
+      res.status(401).json({ success: false, error: "Unauthorized" });
+      return;
+    }
+    next();
+  };
 }

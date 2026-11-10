@@ -1,45 +1,27 @@
 import type {
-  AssertFn,
-  CallbackFn,
-  GetMetaDataFn,
-  GetOrgListFn,
   GetUserInfoFn,
+  RedirectFn,
+  CallbackFn,
   GetUserListFn,
-  RedirectFn
-} from 'type';
-
-import { test_getOrgList, test_GetUserList, test_getUserInfo, test_redirectFn } from './example';
-import { oauth2_getUserInfo, oauth2_redirectFn } from './oauth2.example';
-
-const providerMap: {
-  [key: string]: {
-    getUserInfo?: GetUserInfoFn;
-    redirectFn?: RedirectFn;
-    callbackFn?: CallbackFn;
-    getMetaData?: GetMetaDataFn;
-    assertFn?: AssertFn;
-    getUserList?: GetUserListFn;
-    getOrgList?: GetOrgListFn;
-  };
-} = {
-  test: {
-    redirectFn: test_redirectFn,
-    getUserInfo: test_getUserInfo,
-    getUserList: test_GetUserList,
-    getOrgList: test_getOrgList
-  },
-  oauth2: {
-    redirectFn: oauth2_redirectFn,
-    getUserInfo: oauth2_getUserInfo
-  }
+  GetOrgListFn,
+} from "../type";
+import type { Login } from "../wecom/login";
+import type { Directory } from "../wecom/directory";
+export type Provider = {
+  redirectFn: RedirectFn;
+  callbackFn: CallbackFn;
+  getUserInfo: GetUserInfoFn;
+  getUserList: GetUserListFn;
+  getOrgList: GetOrgListFn;
 };
-
-export function getProvider() {
-  const provider = process.env.SSO_PROVIDER;
-  return (provider ? providerMap[provider] : undefined) || false;
-}
-
-export function getSyncProvider() {
-  const provider = process.env.SSO_SYNC_PROVIDER;
-  return provider ? providerMap[provider] || false : getProvider();
+export function createProvider(login: Login, directory: Directory): Provider {
+  return {
+    redirectFn: async ({ redirect_uri, state }) => ({
+      redirectUrl: login.start(redirect_uri, state),
+    }),
+    callbackFn: async ({ req }) => ({ redirectUrl: await login.callback(req) }),
+    getUserInfo: async (code) => login.consumeCode(code),
+    getUserList: async () => (await directory.get()).userList,
+    getOrgList: async () => (await directory.get()).orgList,
+  };
 }
