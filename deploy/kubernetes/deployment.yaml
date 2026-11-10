@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastgpt-sso
+  labels:
+    app: fastgpt-sso
+spec:
+  replicas: 1
+  # Login transactions and one-use codes are process-local.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: fastgpt-sso
+  template:
+    metadata:
+      labels:
+        app: fastgpt-sso
+    spec:
+      # For a private registry, create the pull secret in this namespace first.
+      # imagePullSecrets:
+      #   - name: sso-registry
+      containers:
+        - name: sso
+          # Replace with your published image and a unique version tag.
+          image: registry.example.com/your-team/fastgpt-wecom-sso:1.0.7
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3000
+          envFrom:
+            - secretRef:
+                name: fastgpt-sso-env
+          env:
+            - name: PORT
+              value: "3000"
+          readinessProbe:
+            httpGet:
+              path: /test
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /test
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          # Starting estimates; size against your actual directory and memory usage.
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
